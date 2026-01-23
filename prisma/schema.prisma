@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  users     User[]
+  ads       Ad[]
+}
+
+model User {
+  id             Int           @id @default(autoincrement())
+  organizationId Int?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  username       String        @unique
+  password       String
+  role           String        // MASTER, AGENCY, ADVERTISER
+  memo           String?
+  createdAt      DateTime      @default(now())
+  ads            Ad[]          @relation("AdvertiserAds")
+}
+
+model Ad {
+  id             Int          @id @default(autoincrement())
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  advertiserId   Int
+  advertiser     User         @relation("AdvertiserAds", fields: [advertiserId], references: [id])
+  kind           String       // PAID, TEST
+  status         String       @default("WAITING") // WAITING, ACTIVE, ERROR, ENDING_SOON, ENDED
+  keyword        String?
+  rank           Int?
+  productName    String?
+  productId      String?
+  quantity       Int?
+  workingDays    Int
+  startDate      DateTime
+  endDate        DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
