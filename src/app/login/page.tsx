@@ -25,13 +25,13 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        console.error(data.error);
         setError(data.error);
         return;
       }
 
       router.push(data.redirectTo);
     } catch {
-      console.error(error);
       setError('서버 오류가 발생했습니다.');
     } finally {
       setLoading(false);
