@@ -31,6 +31,7 @@ export default function LoginPage() {
 
       router.push(data.redirectTo);
     } catch {
+      console.error(error);
       setError('서버 오류가 발생했습니다.');
     } finally {
       setLoading(false);
