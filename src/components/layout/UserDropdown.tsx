@@ -48,23 +48,28 @@ export default function UserDropdown({ username, role }: UserDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
-          <div className="px-4 py-2 border-b">
-            <p className="font-semibold text-sm text-gray-900">{username}</p>
-            <p className="text-xs text-gray-500">{ROLE_LABEL[role]}</p>
+        <div className="absolute right-0 top-full mt-2 w-36 bg-white rounded-lg shadow-sm border py-2 z-50">
+          <div className="px-4 py-2">
+            <p className="font-semibold text-center text-sm text-gray-900">{username}</p>
+            <p className="text-xs text-center text-gray-500">{ROLE_LABEL[role]}</p>
           </div>
+
+          <div className="px-[10px]">
+            <div className="border-t border-gray-200" />
+          </div>
+
           <button
             onClick={() => {
               setIsOpen(false);
               router.push('/profile');
             }}
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+            className="w-full text-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
           >
             프로필 수정
           </button>
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+            className="w-full text-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
           >
             로그아웃
           </button>
