@@ -29,9 +29,9 @@ export default function Sidebar({ role }: SidebarProps) {
   const items = getSidebarItems(role);
 
   return (
-    <aside className="fixed left-0 top-[56px] bottom-0 w-[240px] bg-[#2E3A4A] text-white flex flex-col">
+    <aside className="fixed left-0 top-[56px] bottom-0 w-[240px] bg-[var(--sidebar-bg)] text-white flex flex-col">
       <div className="px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        MAIN MENU
+        MENU
       </div>
       <nav className="flex-1">
         {items.map((item) => {

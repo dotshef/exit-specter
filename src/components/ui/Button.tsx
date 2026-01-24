@@ -19,7 +19,7 @@ export default function Button({
   const baseStyles = 'inline-flex items-center justify-center rounded font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles = {
-    primary: 'bg-[#4CAF50] text-white hover:bg-[#43A047]',
+    primary: 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]',
     outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50',
     danger: 'bg-red-500 text-white hover:bg-red-600',
   };
