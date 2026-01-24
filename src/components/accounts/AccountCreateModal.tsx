@@ -3,14 +3,9 @@
 import { useState, useEffect } from 'react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import { Role } from '@/types';
+import {Organization, Role} from '@/types';
 import { getCreateableRoles } from '@/lib/permissions';
 
-interface Organization {
-  id: number;
-  name: string;
-  userCount: number;
-}
 
 interface AccountCreateModalProps {
   isOpen: boolean;
@@ -40,9 +35,10 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
 
   useEffect(() => {
     if (isOpen) {
+      const roles = getCreateableRoles(currentRole);
       setUsername('');
       setPassword('');
-      setRole(creatableRoles[0] || '');
+      setRole(roles[0] || '');
       setOrganizationId(null);
       setOrganizationName('');
       setIsNewOrg(false);
@@ -55,7 +51,7 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
           .then((data) => setOrganizations(data.organizations || []));
       }
     }
-  }, [isOpen, currentRole, creatableRoles]);
+  }, [isOpen, currentRole]);
 
   async function handleSubmit() {
     setError('');
