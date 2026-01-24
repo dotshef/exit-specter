@@ -42,15 +42,16 @@ export default function AdsPage() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setCurrentRole(data.user.role as Role);
-          setOrganizationId(data.user.organizationId);
-        }
-      });
-    fetchAds();
+    async function init() {
+      const meRes = await fetch('/api/me');
+      const meData = await meRes.json();
+      if (meData.user) {
+        setCurrentRole(meData.user.role as Role);
+        setOrganizationId(meData.user.organizationId);
+      }
+      await fetchAds();
+    }
+    init();
   }, [fetchAds]);
 
   function handleFilterChange(filter: { kind: string | null; status: string | null } | null) {

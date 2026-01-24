@@ -123,7 +123,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T044 [US4] Create profile page in src/app/(protected)/profile/page.tsx (username readonly, role readonly, password input, memo textarea, 수정 button, toast on success)
+- [x] T044 [US4] Create profile page in src/app/(protected)/profile/page.tsx (username readonly, role readonly, password input, memo textarea, 수정 button, toast on success)
 
 **Checkpoint**: User Story 4 완료 - 프로필 수정 기능 동작
 
@@ -133,11 +133,11 @@
 
 **Purpose**: Final quality checks, UI polish, and edge case handling
 
-- [ ] T045 [P] Add middleware for session validation and redirect in src/middleware.ts (redirect unauthenticated to /login, redirect / to appropriate page)
-- [ ] T046 [P] Review and match UI with reference screenshots (reference/ directory): spacing, colors, font sizes, shadows
-- [ ] T047 Run TypeScript type check and fix any type errors (npx tsc --noEmit)
-- [ ] T048 Run ESLint and fix any lint errors (npm run lint)
-- [ ] T049 Verify full application flow: login → accounts → ads → profile → logout with all 3 seed accounts
+- [x] T045 [P] Add middleware for session validation and redirect in src/middleware.ts (redirect unauthenticated to /login, redirect / to appropriate page)
+- [x] T046 [P] Review and match UI with reference screenshots (reference/ directory): spacing, colors, font sizes, shadows
+- [x] T047 Run TypeScript type check and fix any type errors (npx tsc --noEmit)
+- [x] T048 Run ESLint and fix any lint errors (npm run lint)
+- [x] T049 Verify full application flow: login → accounts → ads → profile → logout with all 3 seed accounts
 
 ---
 

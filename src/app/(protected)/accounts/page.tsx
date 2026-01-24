@@ -35,14 +35,15 @@ export default function AccountsPage() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setCurrentRole(data.user.role as Role);
-        }
-      });
-    fetchAccounts();
+    async function init() {
+      const meRes = await fetch('/api/me');
+      const meData = await meRes.json();
+      if (meData.user) {
+        setCurrentRole(meData.user.role as Role);
+      }
+      await fetchAccounts();
+    }
+    init();
   }, [fetchAccounts]);
 
   function handleStatSelect(index: number) {
