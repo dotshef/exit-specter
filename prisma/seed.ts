@@ -18,7 +18,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash('0000', 10);
 
   // Create users
-  const specter = await prisma.user.create({
+  await prisma.user.create({
     data: {
       username: 'specter',
       password: hashedPassword,
@@ -28,7 +28,7 @@ async function main() {
     },
   });
 
-  const alpha = await prisma.user.create({
+  await prisma.user.create({
     data: {
       username: 'alpha',
       password: hashedPassword,
