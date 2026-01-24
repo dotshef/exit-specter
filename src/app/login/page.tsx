@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,7 +26,6 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error(data.error);
         setError(data.error);
         return;
       }
@@ -41,12 +41,18 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-sm bg-white rounded-lg p-8">
-        <h1 className="text-4xl font-bold text-center text-[var(--primary)] mb-8">EXIT</h1>
+        <div className="flex justify-center mb-6">
+          <Image
+              src="/logo.svg"
+              width={100}
+              height={100}
+              alt="EXIT"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+          />
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              아이디
-            </label>
             <input
               id="username"
               type="text"
@@ -58,9 +64,6 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              비밀번호
-            </label>
             <input
               id="password"
               type="password"
