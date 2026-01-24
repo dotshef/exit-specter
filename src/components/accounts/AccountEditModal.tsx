@@ -100,11 +100,12 @@ export default function AccountEditModal({ isOpen, onClose, onSuccess, account }
             비밀번호<span className="text-red-500">*</span>
           </label>
           <input
-            type="password"
+            type="text"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="비밀번호를 입력해주세요."
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
           />
         </div>
 
