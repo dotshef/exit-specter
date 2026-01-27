@@ -26,7 +26,7 @@ export default function Header({ username, role }: HeaderProps) {
   return (
     <header className="fixed top-0 left-2 right-0 h-[56px] bg-white border-b border-gray-200 flex items-center justify-between px-6 z-40">
       <Image
-        src="/home.png"
+        src="/K-168.png"
         width={100}
         height={100}
         alt="EXIT"
