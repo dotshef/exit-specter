@@ -80,7 +80,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
               <th className="px-3 py-3 text-left font-medium text-gray-600">키워드</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">순위</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">상품명</th>
-              <th className="px-3 py-3 text-left font-medium text-gray-600">작업일수</th>
+              <th className="px-3 py-3 text-left font-medium text-gray-600">남은작업일수</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">시작일</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">종료일</th>
               <th className="w-14 px-3 py-3 text-center font-medium text-gray-600">관리</th>
