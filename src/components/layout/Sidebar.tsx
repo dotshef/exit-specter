@@ -68,7 +68,7 @@ export default function Sidebar({ role, username }: SidebarProps) {
         className="flex items-center justify-center px-5 py-6 border-b border-gray-200"
       >
         <Image
-          src="/K-168.png"
+          src="/logo.png"
           width={120}
           height={40}
           alt="EXIT"

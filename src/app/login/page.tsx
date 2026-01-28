@@ -55,9 +55,9 @@ export default function LoginPage() {
           {/* Content */}
           <div className="relative z-10 text-center text-white px-12 max-w-lg">
             <Image
-                src="/K-168.png"
-                width={140}
-                height={52}
+                src="/logo.png"
+                width={200}
+                height={120}
                 alt="EXIT"
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
@@ -82,7 +82,7 @@ export default function LoginPage() {
             {/* Mobile logo */}
             <div className="flex justify-center mb-8 lg:hidden">
               <Image
-                  src="/K-168.png"
+                  src="/logo.png"
                   width={140}
                   height={52}
                   alt="EXIT"
