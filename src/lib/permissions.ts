@@ -1,5 +1,13 @@
 import { Role } from '@/types';
 
+export function canViewNotices(role: Role): boolean {
+  return role === 'MASTER' || role === 'AGENCY';
+}
+
+export function canManageNotices(role: Role): boolean {
+  return role === 'MASTER';
+}
+
 export function canManageAccounts(role: Role): boolean {
   return role === 'MASTER' || role === 'AGENCY';
 }
@@ -38,6 +46,7 @@ export function getSidebarItems(role: Role): { label: string; href: string; icon
   const items: { label: string; href: string; icon: string }[] = [];
 
   if (role === 'MASTER' || role === 'AGENCY') {
+    items.push({ label: '공지사항', href: '/notices', icon: 'notices' });
     items.push({ label: '계정관리', href: '/accounts', icon: 'accounts' });
   }
 

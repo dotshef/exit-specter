@@ -14,7 +14,11 @@
       "Bash(npx tsc:*)",
       "Bash(npx next build)",
       "Bash(npm run lint)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(del \"C:\\\\D\\\\SI\\\\EXIT\\\\exit-project\\\\src\\\\components\\\\notices\\\\NoticeCreateModal.tsx\")",
+      "Bash(del \"C:\\\\D\\\\SI\\\\EXIT\\\\exit-project\\\\src\\\\components\\\\notices\\\\NoticeEditModal.tsx\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

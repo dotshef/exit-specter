@@ -226,7 +226,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">작업일수 (자동계산: 종료일 - 오늘)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">남은작업일수</label>
           <input
             type="text"
             value={computeWorkingDays()}
