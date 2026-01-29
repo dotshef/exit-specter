@@ -40,19 +40,19 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!password) {
-      addToast('비밀번호를 입력해주세요.', 'error');
-      return;
-    }
-
     if (!user) return;
 
     setLoading(true);
     try {
+      const body: { memo: string; password?: string } = { memo };
+      if (password) {
+        body.password = password;
+      }
+
       const res = await fetch(`/api/accounts/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, memo }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
@@ -76,7 +76,7 @@ export default function ProfilePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900">프로필 정보 수정</h1>
-      <p className="text-sm text-gray-500 mt-1">비밀번호와 메모를 수정할 수 있습니다.</p>
+      <p className="text-sm text-gray-500 mt-1">비밀번호와 메모를 수정할 수 있습니다. 비밀번호는 변경 시에만 입력하세요.</p>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-5">
         <div>
@@ -93,13 +93,13 @@ export default function ProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            비밀번호<span className="text-red-500">*</span>
+            비밀번호
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력해주세요."
+            placeholder="변경 시에만 입력하세요."
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
           />
         </div>

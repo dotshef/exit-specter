@@ -1,7 +1,7 @@
 import { Role } from '@/types';
 
 export function canViewNotices(role: Role): boolean {
-  return role === 'MASTER' || role === 'AGENCY';
+  return role === 'MASTER' || role === 'AGENCY' || role === 'ADVERTISER';
 }
 
 export function canManageNotices(role: Role): boolean {
@@ -45,10 +45,11 @@ export function getRedirectPath(role: Role): string {
 export function getSidebarItems(role: Role): { label: string; href: string; icon: string }[] {
   const items: { label: string; href: string; icon: string }[] = [];
 
-  if (role === 'MASTER' || role === 'AGENCY') {
-    items.push({ label: '공지사항', href: '/notices', icon: 'notices' });
-    items.push({ label: '계정관리', href: '/accounts', icon: 'accounts' });
-  }
+  // 모든 역할이 공지사항 볼 수 있음
+  items.push({ label: '공지사항', href: '/notices', icon: 'notices' });
+
+  // 모든 역할이 계정관리 볼 수 있음 (ADVERTISER는 읽기 전용)
+  items.push({ label: '계정관리', href: '/accounts', icon: 'accounts' });
 
   items.push({ label: '광고관리', href: '/ads', icon: 'ads' });
 

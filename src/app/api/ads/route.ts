@@ -35,9 +35,14 @@ export async function GET(request: NextRequest) {
 
   // Base where clause based on role
   let baseWhere: Record<string, unknown> = {};
-  if (role !== 'MASTER') {
+  if (role === 'ADVERTISER') {
+    // ADVERTISER는 자신의 광고만 볼 수 있음
+    baseWhere = { advertiserId: session.id };
+  } else if (role === 'AGENCY') {
+    // AGENCY는 자기 조직의 모든 광고
     baseWhere = { organizationId: session.organizationId };
   }
+  // MASTER는 모든 광고
 
   // Fetch all ads for stats (unfiltered by status/kind)
   const allAds = await prisma.ad.findMany({

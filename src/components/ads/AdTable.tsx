@@ -79,7 +79,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
               <th className="px-3 py-3 text-left font-medium text-gray-600">상태</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">키워드</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">순위</th>
-              <th className="px-3 py-3 text-left font-medium text-gray-600">상품명</th>
+              <th className="px-3 py-3 text-left font-medium text-gray-600">상품 링크</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">남은작업일수</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">시작일</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">종료일</th>
@@ -115,7 +115,19 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                   </td>
                   <td className="px-3 py-3 text-gray-600">{ad.keyword || '-'}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.rank ?? '-'}</td>
-                  <td className="px-3 py-3 text-gray-600">{ad.productName || '-'}</td>
+                  <td className="px-3 py-3 text-gray-600">
+                    {ad.productName ? (
+                      <a
+                        href={ad.productName}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline truncate block max-w-[150px]"
+                        title={ad.productName}
+                      >
+                        링크
+                      </a>
+                    ) : '-'}
+                  </td>
                   <td className="px-3 py-3 text-gray-600">{calculateRemainingDays(ad.endDate)}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.startDate}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.endDate}</td>

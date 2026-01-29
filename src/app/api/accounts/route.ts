@@ -12,20 +12,19 @@ export async function GET(request: NextRequest) {
 
   const role = session.role as Role;
 
-  if (role === 'ADVERTISER') {
-    return NextResponse.json({ error: '접근 권한이 없습니다.' }, { status: 403 });
-  }
-
   const { searchParams } = new URL(request.url);
   const roleFilter = searchParams.get('role');
 
   let where: Record<string, unknown> = {};
 
-  if (role === 'AGENCY') {
+  if (role === 'ADVERTISER') {
+    // ADVERTISER는 자기가 속한 대행사(AGENCY) 정보만 볼 수 있음
+    where = { organizationId: session.organizationId, role: 'AGENCY' };
+  } else if (role === 'AGENCY') {
     where = { organizationId: session.organizationId, role: 'ADVERTISER' };
   }
 
-  if (roleFilter) {
+  if (roleFilter && role !== 'ADVERTISER') {
     where = { ...where, role: roleFilter };
   }
 
@@ -51,7 +50,9 @@ export async function GET(request: NextRequest) {
 
   // Calculate stats based on the unfiltered dataset for the user's scope
   let statsWhere: Record<string, unknown> = {};
-  if (role === 'AGENCY') {
+  if (role === 'ADVERTISER') {
+    statsWhere = { organizationId: session.organizationId, role: 'AGENCY' };
+  } else if (role === 'AGENCY') {
     statsWhere = { organizationId: session.organizationId, role: 'ADVERTISER' };
   }
 

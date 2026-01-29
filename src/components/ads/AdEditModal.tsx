@@ -56,9 +56,25 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
     return Math.max(0, diffDays);
   }
 
+  function isValidUrl(url: string): boolean {
+    return /^https?:\/\/.+/.test(url);
+  }
+
   async function handleSubmit() {
     if (!ad) return;
     setError('');
+
+    // Validation
+    if (keyword && keyword.length > 10) {
+      setError('키워드는 10자 이내로 입력해주세요.');
+      return;
+    }
+
+    if (productName && !isValidUrl(productName)) {
+      setError('상품 링크는 http:// 또는 https://로 시작해야 합니다.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -96,6 +112,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
 
   if (!ad) return null;
 
+  const isMaster = currentRole === 'MASTER';
   const isAdmin = currentRole === 'MASTER' || currentRole === 'AGENCY';
 
   return (
@@ -125,7 +142,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-          {isAdmin ? (
+          {isMaster ? (
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -146,19 +163,25 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">키워드</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">키워드 (최대 10자)</label>
           <input
             type="text"
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 10) {
+                setKeyword(e.target.value);
+              }
+            }}
+            maxLength={10}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
           />
+          <p className="text-xs text-gray-400 mt-1">{keyword.length}/10</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">순위</label>
-            {isAdmin ? (
+            {isMaster ? (
               <input
                 type="number"
                 value={rank}
@@ -195,13 +218,15 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">상품명</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">상품 링크</label>
           <input
-            type="text"
+            type="url"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
+            placeholder="https://"
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
           />
+          <p className="text-xs text-gray-400 mt-1">http:// 또는 https://로 시작하는 링크를 입력하세요</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

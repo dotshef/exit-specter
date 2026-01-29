@@ -34,19 +34,32 @@ export async function PATCH(
   const body = await request.json();
   const { status, keyword, rank, productName, quantity, startDate, endDate } = body;
 
-  const updateData: Record<string, unknown> = {};
-  const isAdmin = role === 'MASTER' || role === 'AGENCY';
+  // Validation
+  if (keyword !== undefined && keyword !== null && keyword.length > 10) {
+    return NextResponse.json({ error: '키워드는 10자 이내로 입력해주세요.' }, { status: 400 });
+  }
 
-  // 광고주는 키워드, 상품명, 시작일, 종료일만 수정 가능
+  if (productName !== undefined && productName !== null && !/^https?:\/\/.+/.test(productName)) {
+    return NextResponse.json({ error: '상품 링크는 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
+  }
+
+  const updateData: Record<string, unknown> = {};
+  const isMaster = role === 'MASTER';
+
+  // 광고주는 키워드, 상품 링크, 시작일, 종료일만 수정 가능
   if (keyword !== undefined) updateData.keyword = keyword;
   if (productName !== undefined) updateData.productName = productName;
   if (startDate !== undefined) updateData.startDate = new Date(startDate);
   if (endDate !== undefined) updateData.endDate = new Date(endDate);
 
-  // 관리자만 수정 가능한 필드
-  if (isAdmin) {
+  // MASTER만 수정 가능한 필드 (상태, 순위)
+  if (isMaster) {
     if (status !== undefined) updateData.status = status;
     if (rank !== undefined) updateData.rank = rank;
+  }
+
+  // MASTER, AGENCY만 수정 가능한 필드 (수량)
+  if (role === 'MASTER' || role === 'AGENCY') {
     if (quantity !== undefined) updateData.quantity = quantity;
   }
 

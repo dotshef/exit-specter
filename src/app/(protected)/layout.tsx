@@ -16,7 +16,10 @@ export default async function ProtectedLayout({
 
   return (
     <div className="min-h-screen">
-      <Sidebar role={session.role as Role} username={session.username} />
+      <Sidebar
+        role={session.role as Role}
+        username={session.username}
+      />
       <main className="ml-[240px] mt-0 p-6">
         {children}
       </main>

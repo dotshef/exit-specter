@@ -37,9 +37,11 @@ export default function AccountsPage() {
       if (meData.user) {
         const role = meData.user.role as Role;
         setCurrentRole(role);
-        // AGENCY는 광고주만 볼 수 있음
+        // AGENCY는 광고주만, ADVERTISER는 대행사만 볼 수 있음
         if (role === 'AGENCY') {
           await fetchAccounts('ADVERTISER');
+        } else if (role === 'ADVERTISER') {
+          await fetchAccounts('AGENCY');
         } else {
           await fetchAccounts();
         }
@@ -51,9 +53,11 @@ export default function AccountsPage() {
   function handleStatSelect(index: number) {
     setSelectedStatIndex(index);
     setSelectedIds([]);
-    // AGENCY는 항상 ADVERTISER 필터 적용
+    // AGENCY는 항상 ADVERTISER 필터, ADVERTISER는 항상 AGENCY 필터 적용
     if (currentRole === 'AGENCY') {
       fetchAccounts('ADVERTISER');
+    } else if (currentRole === 'ADVERTISER') {
+      fetchAccounts('AGENCY');
     } else {
       const roleFilters: (string | null)[] = [null, 'MASTER', 'AGENCY', 'ADVERTISER'];
       fetchAccounts(roleFilters[index]);
@@ -108,15 +112,20 @@ export default function AccountsPage() {
     }
   }
 
-  // AGENCY는 광고주만 표시
+  // 역할별 표시 항목
   const statsItems = currentRole === 'AGENCY'
     ? [{ label: '광고주', value: stats.advertiser }]
+    : currentRole === 'ADVERTISER'
+    ? [{ label: '대행사', value: stats.agency }]
     : [
         { label: '전체', value: stats.total },
         { label: '총판사', value: stats.master },
         { label: '대행사', value: stats.agency },
         { label: '광고주', value: stats.advertiser },
       ];
+
+  // ADVERTISER는 등록/수정/삭제 불가
+  const canManage = currentRole === 'MASTER' || currentRole === 'AGENCY';
 
   return (
     <div>
@@ -136,33 +145,41 @@ export default function AccountsPage() {
         />
       </div>
 
-      <div className="flex justify-end gap-2 mb-3">
-        <Button variant="outline" onClick={handleDelete}>삭제</Button>
-        <Button onClick={() => setIsCreateOpen(true)}>등록</Button>
-      </div>
+      {canManage && (
+        <div className="flex justify-end gap-2 mb-3">
+          <Button variant="outline" onClick={handleDelete}>삭제</Button>
+          <Button onClick={() => setIsCreateOpen(true)}>등록</Button>
+        </div>
+      )}
 
       <AccountTable
         accounts={accounts}
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
         onEdit={(account) => setEditAccount(account)}
+        showCheckbox={canManage}
+        showEdit={canManage}
       />
 
       <Pagination />
 
-      <AccountCreateModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        onSuccess={handleCreateSuccess}
-        currentRole={currentRole}
-      />
+      {canManage && (
+        <>
+          <AccountCreateModal
+            isOpen={isCreateOpen}
+            onClose={() => setIsCreateOpen(false)}
+            onSuccess={handleCreateSuccess}
+            currentRole={currentRole}
+          />
 
-      <AccountEditModal
-        isOpen={!!editAccount}
-        onClose={() => setEditAccount(null)}
-        onSuccess={handleEditSuccess}
-        account={editAccount}
-      />
+          <AccountEditModal
+            isOpen={!!editAccount}
+            onClose={() => setEditAccount(null)}
+            onSuccess={handleEditSuccess}
+            account={editAccount}
+          />
+        </>
+      )}
     </div>
   );
 }
