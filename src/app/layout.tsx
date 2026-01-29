@@ -3,7 +3,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
-  title: "EXIT 광고 관리 시스템",
+  title: "EXIT",
   description: "EXIT 광고 관리 시스템",
 };
 
