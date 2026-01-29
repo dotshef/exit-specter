@@ -32,8 +32,6 @@ export interface Ad {
   rank: number | null;
   productName: string | null;
   productId: string | null;
-  quantity: number | null;
-  workingDays: number;
   startDate: string;
   endDate: string;
   createdAt: string;

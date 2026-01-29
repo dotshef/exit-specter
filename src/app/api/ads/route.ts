@@ -80,8 +80,6 @@ export async function GET(request: NextRequest) {
     rank: ad.rank,
     productName: ad.productName,
     productId: ad.productId,
-    quantity: ad.quantity,
-    workingDays: ad.workingDays,
     startDate: ad.startDate.toISOString().split('T')[0],
     endDate: ad.endDate.toISOString().split('T')[0],
     createdAt: ad.createdAt.toISOString(),
@@ -89,6 +87,13 @@ export async function GET(request: NextRequest) {
   }));
 
   return NextResponse.json({ ads: formattedAds, stats });
+}
+
+interface AdInput {
+  keyword?: string;
+  productName?: string;
+  startDate: string;
+  endDate: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -104,9 +109,13 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { advertiserId, kind, keyword, productName, productId, quantity, workingDays, startDate } = body;
+  const { advertiserId, kind, ads } = body as {
+    advertiserId: number;
+    kind: string;
+    ads: AdInput[];
+  };
 
-  if (!advertiserId || !kind || !workingDays || !startDate) {
+  if (!advertiserId || !kind || !ads || ads.length === 0) {
     return NextResponse.json({ error: '필수 항목을 입력해주세요.' }, { status: 400 });
   }
 
@@ -124,29 +133,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '광고 등록 권한이 없습니다.' }, { status: 403 });
   }
 
-  const start = new Date(startDate);
-  const end = new Date(start);
-  end.setDate(end.getDate() + workingDays);
+  // Validation
+  for (const ad of ads) {
+    if (!ad.startDate || !ad.endDate) {
+      return NextResponse.json({ error: '시작일과 종료일은 필수입니다.' }, { status: 400 });
+    }
+    if (ad.keyword && ad.keyword.length > 10) {
+      return NextResponse.json({ error: '키워드는 10자 이내로 입력해주세요.' }, { status: 400 });
+    }
+    if (ad.productName && !/^https?:\/\/.+/.test(ad.productName)) {
+      return NextResponse.json({ error: '상품 링크는 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
+    }
+  }
 
-  const ad = await prisma.ad.create({
-    data: {
-      organizationId: advertiser.organizationId!,
-      advertiserId,
-      kind,
-      status: 'WAITING',
-      keyword: keyword || null,
-      productName: productName || null,
-      productId: productId || null,
-      quantity: quantity || null,
-      workingDays,
-      startDate: start,
-      endDate: end,
-    },
-    include: { advertiser: { select: { username: true } } },
-  });
+  // Create multiple ads
+  const createdAds = await prisma.$transaction(
+    ads.map((ad) =>
+      prisma.ad.create({
+        data: {
+          organizationId: advertiser.organizationId!,
+          advertiserId,
+          kind,
+          status: 'WAITING',
+          keyword: ad.keyword || null,
+          productName: ad.productName || null,
+          startDate: new Date(ad.startDate),
+          endDate: new Date(ad.endDate),
+        },
+        include: { advertiser: { select: { username: true } } },
+      })
+    )
+  );
 
   return NextResponse.json({
-    ad: {
+    ads: createdAds.map((ad) => ({
       id: ad.id,
       organizationId: ad.organizationId,
       advertiserId: ad.advertiserId,
@@ -157,13 +177,12 @@ export async function POST(request: NextRequest) {
       rank: ad.rank,
       productName: ad.productName,
       productId: ad.productId,
-      quantity: ad.quantity,
-      workingDays: ad.workingDays,
       startDate: ad.startDate.toISOString().split('T')[0],
       endDate: ad.endDate.toISOString().split('T')[0],
       createdAt: ad.createdAt.toISOString(),
       updatedAt: ad.updatedAt.toISOString(),
-    },
+    })),
+    count: createdAds.length,
   }, { status: 201 });
 }
 

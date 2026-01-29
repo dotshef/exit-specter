@@ -26,7 +26,6 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
   const [keyword, setKeyword] = useState('');
   const [rank, setRank] = useState<number | ''>('');
   const [productName, setProductName] = useState('');
-  const [quantity, setQuantity] = useState<number>(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
@@ -38,7 +37,6 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
       setKeyword(ad.keyword || '');
       setRank(ad.rank ?? '');
       setProductName(ad.productName || '');
-      setQuantity(ad.quantity || 0);
       setStartDate(ad.startDate);
       setEndDate(ad.endDate);
       setError('');
@@ -83,7 +81,6 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
         keyword: keyword || null,
         rank: rank === '' ? null : rank,
         productName: productName || null,
-        quantity,
         startDate,
         endDate,
       };
@@ -113,7 +110,6 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
   if (!ad) return null;
 
   const isMaster = currentRole === 'MASTER';
-  const isAdmin = currentRole === 'MASTER' || currentRole === 'AGENCY';
 
   return (
     <Modal
@@ -178,43 +174,23 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
           <p className="text-xs text-gray-400 mt-1">{keyword.length}/10</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">순위</label>
-            {isMaster ? (
-              <input
-                type="number"
-                value={rank}
-                onChange={(e) => setRank(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-              />
-            ) : (
-              <input
-                type="text"
-                value={rank === '' ? '-' : rank}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded bg-gray-100 text-gray-600"
-              />
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">수량</label>
-            {isAdmin ? (
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-              />
-            ) : (
-              <input
-                type="text"
-                value={quantity}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded bg-gray-100 text-gray-600"
-              />
-            )}
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">순위</label>
+          {isMaster ? (
+            <input
+              type="number"
+              value={rank}
+              onChange={(e) => setRank(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+            />
+          ) : (
+            <input
+              type="text"
+              value={rank === '' ? '-' : rank}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-200 rounded bg-gray-100 text-gray-600"
+            />
+          )}
         </div>
 
         <div>

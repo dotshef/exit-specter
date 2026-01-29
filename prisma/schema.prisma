@@ -38,10 +38,8 @@ model Ad {
   status         String       @default("WAITING") // WAITING, ACTIVE, ERROR, ENDING_SOON, ENDED
   keyword        String?
   rank           Int?
-  productName    String?
+  productName    String?      // 상품 링크로 사용
   productId      String?
-  quantity       Int?
-  workingDays    Int
   startDate      DateTime
   endDate        DateTime
   createdAt      DateTime     @default(now())

@@ -32,7 +32,7 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { status, keyword, rank, productName, quantity, startDate, endDate } = body;
+  const { status, keyword, rank, productName, startDate, endDate } = body;
 
   // Validation
   if (keyword !== undefined && keyword !== null && keyword.length > 10) {
@@ -58,11 +58,6 @@ export async function PATCH(
     if (rank !== undefined) updateData.rank = rank;
   }
 
-  // MASTER, AGENCY만 수정 가능한 필드 (수량)
-  if (role === 'MASTER' || role === 'AGENCY') {
-    if (quantity !== undefined) updateData.quantity = quantity;
-  }
-
   const updated = await prisma.ad.update({
     where: { id: targetId },
     data: updateData,
@@ -81,8 +76,6 @@ export async function PATCH(
       rank: updated.rank,
       productName: updated.productName,
       productId: updated.productId,
-      quantity: updated.quantity,
-      workingDays: updated.workingDays,
       startDate: updated.startDate.toISOString().split('T')[0],
       endDate: updated.endDate.toISOString().split('T')[0],
       createdAt: updated.createdAt.toISOString(),

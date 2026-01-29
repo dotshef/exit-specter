@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Ad, Role, AdStatsGroup } from '@/types';
 import Button from '@/components/ui/Button';
 import Pagination from '@/components/ui/Pagination';
 import AdStatusCards from '@/components/ads/AdStatusCards';
 import AdTable from '@/components/ads/AdTable';
-import AdCreateModal from '@/components/ads/AdCreateModal';
 import AdEditModal from '@/components/ads/AdEditModal';
 import { useToast } from '@/hooks/useToast';
 
@@ -17,14 +17,13 @@ const emptyStats: AdStatsGroup = {
 };
 
 export default function AdsPage() {
+  const router = useRouter();
   const { addToast } = useToast();
   const [ads, setAds] = useState<Ad[]>([]);
   const [stats, setStats] = useState<AdStatsGroup>(emptyStats);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<{ kind: string | null; status: string | null } | null>(null);
   const [currentRole, setCurrentRole] = useState<Role>('ADVERTISER');
-  const [organizationId, setOrganizationId] = useState<number | null>(null);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editAd, setEditAd] = useState<Ad | null>(null);
 
   const fetchAds = useCallback(async (filter?: { kind: string | null; status: string | null } | null) => {
@@ -47,7 +46,6 @@ export default function AdsPage() {
       const meData = await meRes.json();
       if (meData.user) {
         setCurrentRole(meData.user.role as Role);
-        setOrganizationId(meData.user.organizationId);
       }
       await fetchAds();
     }
@@ -84,12 +82,6 @@ export default function AdsPage() {
     }
   }
 
-  function handleCreateSuccess() {
-    addToast('광고가 등록되었습니다.', 'success');
-    setSelectedFilter(null);
-    fetchAds();
-  }
-
   function handleEditSuccess() {
     addToast('광고가 수정되었습니다.', 'success');
     fetchAds(selectedFilter);
@@ -117,7 +109,7 @@ export default function AdsPage() {
       {canManage && (
         <div className="flex justify-end gap-2 mb-3">
           <Button variant="outline" onClick={handleDelete}>삭제</Button>
-          <Button onClick={() => setIsCreateOpen(true)}>등록</Button>
+          <Button onClick={() => router.push('/ads/create')}>등록</Button>
         </div>
       )}
 
@@ -130,16 +122,6 @@ export default function AdsPage() {
       />
 
       <Pagination />
-
-      {canManage && (
-        <AdCreateModal
-          isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
-          onSuccess={handleCreateSuccess}
-          currentRole={currentRole}
-          organizationId={organizationId}
-        />
-      )}
 
       <AdEditModal
         isOpen={!!editAd}
