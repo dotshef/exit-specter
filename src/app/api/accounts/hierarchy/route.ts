@@ -16,12 +16,26 @@ export async function GET(request: NextRequest) {
 
   // MASTER: 선택한 총판의 조직들과 계정 조회
   if (role === 'MASTER') {
-    // 총판 목록 조회
+    // 총판 목록 조회 (조직 개수 포함)
     const masters = await prisma.user.findMany({
       where: { role: 'MASTER' },
-      select: { id: true, username: true, nickname: true },
+      select: {
+        id: true,
+        username: true,
+        nickname: true,
+        _count: {
+          select: { managedOrganizations: true },
+        },
+      },
       orderBy: { id: 'asc' },
     });
+
+    const mastersWithCount = masters.map((m) => ({
+      id: m.id,
+      username: m.username,
+      nickname: m.nickname,
+      organizationCount: m._count.managedOrganizations,
+    }));
 
     // 특정 총판이 선택된 경우 해당 조직들 조회
     let organizations: Array<{
@@ -70,7 +84,7 @@ export async function GET(request: NextRequest) {
 
       if (org) {
         return NextResponse.json({
-          masters,
+          masters: mastersWithCount,
           organization: {
             id: org.id,
             name: org.name,
@@ -86,7 +100,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ masters, organizations });
+    return NextResponse.json({ masters: mastersWithCount, organizations });
   }
 
   // AGENCY: 본인 소속 조직의 총판, 대행사, 광고주 조회

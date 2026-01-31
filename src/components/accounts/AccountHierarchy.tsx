@@ -7,6 +7,7 @@ interface Master {
   id: number;
   username: string;
   nickname: string | null;
+  organizationCount: number;
 }
 
 interface UserInfo {
@@ -120,7 +121,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
             조직
           </div>
           {/* 계정 목록 탭 */}
-          <div className="flex-1 py-3 px-4 text-sm font-medium text-[var(--primary)] border-b-2 border-[var(--primary)] bg-gray-50">
+          <div className="flex-1 py-3 px-4 text-sm font-medium text-center bg-gray-50 text-gray-500">
             계정 목록
           </div>
         </div>
@@ -133,7 +134,8 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
               <div className="p-4 text-center text-gray-400 text-sm">로딩 중...</div>
             ) : data.organization?.master ? (
               <div className="px-3 py-3 text-sm text-[var(--primary)] font-medium border-b-2 border-[var(--primary)]">
-                {data.organization.master.nickname || '총판'}
+                <div>{data.organization.master.nickname || '총판'}</div>
+                <div className="text-xs text-gray-400 mt-0.5 font-normal">조직 1</div>
               </div>
             ) : (
               <div className="p-4 text-center text-gray-400 text-sm">총판 정보 없음</div>
@@ -146,7 +148,10 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
               <div className="p-4 text-center text-gray-400 text-sm">로딩 중...</div>
             ) : data.organization ? (
               <div className="px-3 py-3 text-sm text-[var(--primary)] font-medium border-b-2 border-[var(--primary)]">
-                {data.organization.name}
+                <div>{data.organization.name}</div>
+                <div className="text-xs text-gray-400 mt-0.5 font-normal">
+                  대행사 {data.organization.agencies.length} · 광고주 {data.organization.advertisers.length}
+                </div>
               </div>
             ) : (
               <div className="p-4 text-center text-gray-400 text-sm">소속 조직 없음</div>
@@ -197,7 +202,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
           조직
         </div>
         {/* 계정 목록 탭 */}
-        <div className="flex-1 py-3 px-4 text-sm font-medium text-[var(--primary)] border-b-2 border-[var(--primary)] bg-gray-50">
+        <div className="flex-1 py-3 px-4 text-sm font-medium text-center bg-gray-50 text-gray-500">
           {selectedOrg ? selectedOrg.name : '계정 목록'}
         </div>
       </div>
@@ -213,13 +218,18 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
               <button
                 key={master.id}
                 onClick={() => handleMasterSelect(master.id)}
-                className={`w-full px-3 py-3 text-left text-sm transition-colors cursor-pointer ${
+                className={`w-full px-3 py-3 text-left transition-colors cursor-pointer ${
                   selectedMasterId === master.id
-                    ? 'text-[var(--primary)] font-medium border-b-2 border-[var(--primary)]'
+                    ? 'text-[var(--primary)] border-b-2 border-[var(--primary)]'
                     : 'text-gray-600 hover:bg-gray-50 border-b border-gray-100'
                 }`}
               >
-                {master.nickname || master.username}
+                <div className={`text-sm ${selectedMasterId === master.id ? 'font-medium' : ''}`}>
+                  {master.nickname || master.username}
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5">
+                  조직 {master.organizationCount}
+                </div>
               </button>
             ))
           )}
