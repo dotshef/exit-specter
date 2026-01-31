@@ -13,7 +13,7 @@ interface Advertiser {
 
 interface AdRow {
   keyword: string;
-  productName: string;
+  productLink: string;
   startDate: string;
   endDate: string;
 }
@@ -101,7 +101,7 @@ export default function AdCreatePage() {
     // 수량만큼 row 생성
     const rows: AdRow[] = Array.from({ length: quantity }, () => ({
       keyword: '',
-      productName: '',
+      productLink: '',
       startDate: today,
       endDate: endDateStr,
     }));
@@ -130,7 +130,7 @@ export default function AdCreatePage() {
         setError(`${i + 1}번째 광고의 시작일과 종료일을 입력해주세요.`);
         return;
       }
-      if (row.productName && !isValidUrl(row.productName)) {
+      if (row.productLink && !isValidUrl(row.productLink)) {
         setError(`${i + 1}번째 광고의 상품 링크는 http:// 또는 https://로 시작해야 합니다.`);
         return;
       }
@@ -147,7 +147,7 @@ export default function AdCreatePage() {
           kind,
           ads: adRows.map((row) => ({
             keyword: row.keyword || null,
-            productName: row.productName || null,
+            productLink: row.productLink || null,
             startDate: row.startDate,
             endDate: row.endDate,
           })),
@@ -297,8 +297,8 @@ export default function AdCreatePage() {
                     <td className="px-3 py-2">
                       <input
                         type="url"
-                        value={row.productName}
-                        onChange={(e) => updateAdRow(index, 'productName', e.target.value)}
+                        value={row.productLink}
+                        onChange={(e) => updateAdRow(index, 'productLink', e.target.value)}
                         placeholder="https://"
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />

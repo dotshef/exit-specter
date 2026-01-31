@@ -11,51 +11,51 @@ datasource db {
 model Organization {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  masterId  Int?     // 이 조직을 관리하는 총판 (MASTER)
+  masterId  Int?     @map("master_id")
   master    User?    @relation("ManagedOrganizations", fields: [masterId], references: [id])
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
   users     User[]   @relation("BelongsToOrganization")
   ads       Ad[]
 }
 
 model User {
   id                   Int            @id @default(autoincrement())
-  organizationId       Int?
+  organizationId       Int?           @map("organization_id")
   organization         Organization?  @relation("BelongsToOrganization", fields: [organizationId], references: [id])
-  managedOrganizations Organization[] @relation("ManagedOrganizations") // MASTER가 관리하는 조직들
+  managedOrganizations Organization[] @relation("ManagedOrganizations")
   username             String         @unique
   nickname             String?
   password             String
-  role                 String         // MASTER, AGENCY, ADVERTISER
+  role                 String
   memo                 String?
-  createdAt            DateTime       @default(now())
+  createdAt            DateTime       @default(now()) @map("created_at")
   ads                  Ad[]           @relation("AdvertiserAds")
+  notices              Notice[]
 }
 
 model Ad {
   id             Int          @id @default(autoincrement())
-  organizationId Int
+  organizationId Int          @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
-  advertiserId   Int
+  advertiserId   Int          @map("advertiser_id")
   advertiser     User         @relation("AdvertiserAds", fields: [advertiserId], references: [id])
-  kind           String       // PAID, TEST
-  status         String       @default("WAITING") // WAITING, ACTIVE, ERROR, ENDING_SOON, ENDED
+  kind           String
+  status         String       @default("WAITING")
   keyword        String?
   rank           Int?
-  productName    String?      // 상품 링크로 사용
-  productId      String?
-  startDate      DateTime
-  endDate        DateTime
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  productLink    String?      @map("product_link")
+  startDate      DateTime     @map("start_date")
+  endDate        DateTime     @map("end_date")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
 }
 
 model Notice {
   id        Int      @id @default(autoincrement())
   title     String   @db.Text
   content   String   @db.Text
+  authorId  Int?     @map("author_id")
+  author    User?    @relation(fields: [authorId], references: [id])
   viewCount Int      @default(0) @map("view_count")
   createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("Notice")
 }

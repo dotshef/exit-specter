@@ -87,8 +87,7 @@ export async function GET(request: NextRequest) {
     status: ad.status,
     keyword: ad.keyword,
     rank: ad.rank,
-    productName: ad.productName,
-    productId: ad.productId,
+    productLink: ad.productLink,
     startDate: ad.startDate.toISOString().split('T')[0],
     endDate: ad.endDate.toISOString().split('T')[0],
     createdAt: ad.createdAt.toISOString(),
@@ -100,7 +99,7 @@ export async function GET(request: NextRequest) {
 
 interface AdInput {
   keyword?: string;
-  productName?: string;
+  productLink?: string;
   startDate: string;
   endDate: string;
 }
@@ -150,7 +149,7 @@ export async function POST(request: NextRequest) {
     if (ad.keyword && ad.keyword.length > 10) {
       return NextResponse.json({ error: '키워드는 10자 이내로 입력해주세요.' }, { status: 400 });
     }
-    if (ad.productName && !/^https?:\/\/.+/.test(ad.productName)) {
+    if (ad.productLink && !/^https?:\/\/.+/.test(ad.productLink)) {
       return NextResponse.json({ error: '상품 링크는 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
     }
   }
@@ -165,7 +164,7 @@ export async function POST(request: NextRequest) {
           kind,
           status: 'WAITING',
           keyword: ad.keyword || null,
-          productName: ad.productName || null,
+          productLink: ad.productLink || null,
           startDate: new Date(ad.startDate),
           endDate: new Date(ad.endDate),
         },
@@ -184,8 +183,7 @@ export async function POST(request: NextRequest) {
       status: ad.status,
       keyword: ad.keyword,
       rank: ad.rank,
-      productName: ad.productName,
-      productId: ad.productId,
+      productLink: ad.productLink,
       startDate: ad.startDate.toISOString().split('T')[0],
       endDate: ad.endDate.toISOString().split('T')[0],
       createdAt: ad.createdAt.toISOString(),

@@ -26,6 +26,7 @@ export default function NoticeTable({ notices }: NoticeTableProps) {
             <tr className="border-b border-gray-200 bg-gray-50">
               <th className="px-4 py-3 text-left font-medium text-gray-600 w-16">No</th>
               <th className="px-4 py-3 text-left font-medium text-gray-600">제목</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 w-28">작성자</th>
               <th className="px-4 py-3 text-left font-medium text-gray-600 w-32">작성일</th>
               <th className="px-4 py-3 text-left font-medium text-gray-600 w-24">조회수</th>
             </tr>
@@ -33,7 +34,7 @@ export default function NoticeTable({ notices }: NoticeTableProps) {
           <tbody>
             {notices.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
                   등록된 공지사항이 없습니다.
                 </td>
               </tr>
@@ -46,6 +47,7 @@ export default function NoticeTable({ notices }: NoticeTableProps) {
                 >
                   <td className="px-4 py-3 text-gray-600">{notice.id}</td>
                   <td className="px-4 py-3 text-gray-900">{notice.title}</td>
+                  <td className="px-4 py-3 text-gray-600">{notice.authorNickname || '-'}</td>
                   <td className="px-4 py-3 text-gray-600">{formatDate(notice.createdAt)}</td>
                   <td className="px-4 py-3 text-gray-600">{notice.viewCount}</td>
                 </tr>

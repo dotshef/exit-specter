@@ -117,13 +117,13 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                   <td className="px-3 py-3 text-gray-600">{ad.keyword || '-'}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.rank ?? '-'}</td>
                   <td className="px-3 py-3 text-gray-600">
-                    {ad.productName ? (
+                    {ad.productLink ? (
                       <a
-                        href={ad.productName}
+                        href={ad.productLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline truncate block max-w-[150px]"
-                        title={ad.productName}
+                        title={ad.productLink}
                       >
                         링크
                       </a>

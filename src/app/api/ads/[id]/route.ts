@@ -32,14 +32,14 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { status, keyword, rank, productName, startDate, endDate } = body;
+  const { status, keyword, rank, productLink, startDate, endDate } = body;
 
   // Validation
   if (keyword !== undefined && keyword !== null && keyword.length > 10) {
     return NextResponse.json({ error: '키워드는 10자 이내로 입력해주세요.' }, { status: 400 });
   }
 
-  if (productName !== undefined && productName !== null && !/^https?:\/\/.+/.test(productName)) {
+  if (productLink !== undefined && productLink !== null && !/^https?:\/\/.+/.test(productLink)) {
     return NextResponse.json({ error: '상품 링크는 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
   }
 
@@ -48,7 +48,7 @@ export async function PATCH(
 
   // 광고주는 키워드, 상품 링크, 시작일, 종료일만 수정 가능
   if (keyword !== undefined) updateData.keyword = keyword;
-  if (productName !== undefined) updateData.productName = productName;
+  if (productLink !== undefined) updateData.productLink = productLink;
   if (startDate !== undefined) updateData.startDate = new Date(startDate);
   if (endDate !== undefined) updateData.endDate = new Date(endDate);
 
@@ -74,8 +74,7 @@ export async function PATCH(
       status: updated.status,
       keyword: updated.keyword,
       rank: updated.rank,
-      productName: updated.productName,
-      productId: updated.productId,
+      productLink: updated.productLink,
       startDate: updated.startDate.toISOString().split('T')[0],
       endDate: updated.endDate.toISOString().split('T')[0],
       createdAt: updated.createdAt.toISOString(),

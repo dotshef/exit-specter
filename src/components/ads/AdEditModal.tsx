@@ -25,7 +25,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
   const [status, setStatus] = useState('');
   const [keyword, setKeyword] = useState('');
   const [rank, setRank] = useState<number | ''>('');
-  const [productName, setProductName] = useState('');
+  const [productLink, setProductName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
       setStatus(ad.status);
       setKeyword(ad.keyword || '');
       setRank(ad.rank ?? '');
-      setProductName(ad.productName || '');
+      setProductName(ad.productLink || '');
       setStartDate(ad.startDate);
       setEndDate(ad.endDate);
       setError('');
@@ -68,7 +68,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
       return;
     }
 
-    if (productName && !isValidUrl(productName)) {
+    if (productLink && !isValidUrl(productLink)) {
       setError('상품 링크는 http:// 또는 https://로 시작해야 합니다.');
       return;
     }
@@ -80,7 +80,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
         status,
         keyword: keyword || null,
         rank: rank === '' ? null : rank,
-        productName: productName || null,
+        productLink: productLink || null,
         startDate,
         endDate,
       };
@@ -197,7 +197,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
           <label className="block text-sm font-medium text-gray-700 mb-1">상품 링크</label>
           <input
             type="url"
-            value={productName}
+            value={productLink}
             onChange={(e) => setProductName(e.target.value)}
             placeholder="https://"
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"

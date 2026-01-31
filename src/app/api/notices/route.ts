@@ -28,11 +28,17 @@ export async function GET(request: NextRequest) {
     orderBy: { id: 'desc' },
     skip: (page - 1) * PAGE_SIZE,
     take: PAGE_SIZE,
+    include: {
+      author: {
+        select: { nickname: true },
+      },
+    },
   });
 
   const formattedNotices = notices.map((n) => ({
     id: n.id,
     title: n.title,
+    authorNickname: n.author?.nickname || '-',
     viewCount: n.viewCount,
     createdAt: n.createdAt.toISOString(),
   }));
@@ -67,6 +73,7 @@ export async function POST(request: NextRequest) {
     data: {
       title: title.trim(),
       content: content.trim(),
+      authorId: session.id,
     },
   });
 

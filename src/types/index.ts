@@ -31,8 +31,7 @@ export interface Ad {
   status: AdStatus;
   keyword: string | null;
   rank: number | null;
-  productName: string | null;
-  productId: string | null;
+  productLink: string | null;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -73,6 +72,7 @@ export interface Notice {
   id: number;
   title: string;
   content: string;
+  authorNickname?: string;
   viewCount: number;
   createdAt: string;
 }
