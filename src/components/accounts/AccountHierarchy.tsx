@@ -210,7 +210,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
           <TabHeaders />
 
-          <div className="flex min-h-[500px]">
+          <div className="flex h-[500px]">
             {/* 총판 */}
             <HierarchyColumn
               width="w-48"
@@ -253,7 +253,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
             </HierarchyColumn>
 
             {/* 계정 테이블 */}
-            <div className="flex-1 overflow-x-auto">
+            <div className="flex-1 overflow-auto">
               {loading ? (
                 <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                   로딩 중...
@@ -304,7 +304,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         <TabHeaders />
 
-        <div className="flex min-h-[500px]">
+        <div className="flex h-[500px]">
           {/* 총판 목록 */}
           <HierarchyColumn
             width="w-48"
@@ -356,7 +356,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
           </HierarchyColumn>
 
           {/* 계정 테이블 */}
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1 overflow-auto">
             {!selectedOrgId ? (
               <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                 조직을 선택하세요.

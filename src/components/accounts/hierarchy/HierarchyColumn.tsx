@@ -19,7 +19,7 @@ export default function HierarchyColumn({
   children,
 }: HierarchyColumnProps) {
   return (
-    <div className={`${width} border-r border-gray-200 overflow-y-auto`}>
+    <div className={`${width} h-full border-r border-gray-200 overflow-y-auto`}>
       {loading ? (
         <ColumnMessage message={loadingMessage} />
       ) : isEmpty && emptyMessage ? (
