@@ -189,7 +189,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
     return (
       <div className="flex border-b border-gray-200">
         <ColumnHeader title="총판" width="w-48" />
-        <ColumnHeader title="대행사 조직" width="w-56" />
+        <ColumnHeader title="대행사" width="w-56" />
         <ColumnHeader title="계정 목록" width="flex-1" isLast />
       </div>
     );

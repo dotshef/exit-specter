@@ -189,7 +189,7 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
 
         {currentRole === 'MASTER' && role !== 'MASTER' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">소속 대행사 조직</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">소속 조직</label>
             <div className="flex items-center gap-2 mb-2">
               <label className="flex items-center gap-1 text-sm cursor-pointer">
                 <input
