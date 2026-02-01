@@ -46,14 +46,6 @@ export default function NoticesPage() {
     init();
   }, [fetchNotices, router]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">로딩 중...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
@@ -69,7 +61,7 @@ export default function NoticesPage() {
         </div>
       )}
 
-      <NoticeTable notices={notices} />
+      <NoticeTable notices={notices} loading={loading} />
 
       <Pagination
         currentPage={currentPage}

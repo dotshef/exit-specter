@@ -6,9 +6,10 @@ import { formatDate } from '@/components/util/Date';
 
 interface NoticeTableProps {
   notices: Notice[];
+  loading?: boolean;
 }
 
-export default function NoticeTable({ notices }: NoticeTableProps) {
+export default function NoticeTable({ notices, loading }: NoticeTableProps) {
   const router = useRouter();
 
   function handleRowClick(id: number) {
@@ -29,7 +30,13 @@ export default function NoticeTable({ notices }: NoticeTableProps) {
             </tr>
           </thead>
           <tbody>
-            {notices.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                  로딩중...
+                </td>
+              </tr>
+            ) : notices.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
                   등록된 공지사항이 없습니다.
