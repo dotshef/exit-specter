@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { Role } from '@/types';
-import { validatePassword } from '@/lib/validation';
+import { validatePassword, validateUsername } from '@/lib/validation';
 
 const PAGE_SIZE = 10;
 
@@ -99,6 +99,12 @@ export async function POST(request: NextRequest) {
 
   if (!username || !nickname?.trim() || !password || !role) {
     return NextResponse.json({ error: '필수 항목을 입력해주세요.' }, { status: 400 });
+  }
+
+  // Username validation
+  const usernameValidation = validateUsername(username);
+  if (!usernameValidation.valid) {
+    return NextResponse.json({ error: usernameValidation.error }, { status: 400 });
   }
 
   // Password validation

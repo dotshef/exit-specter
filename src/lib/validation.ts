@@ -21,5 +21,9 @@ export function validateUsername(username: string): { valid: boolean; error?: st
     return { valid: false, error: '아이디는 3자 이상이어야 합니다.' };
   }
 
+  if (!/^[a-z0-9]+$/.test(username)) {
+    return { valid: false, error: '아이디는 영문 소문자와 숫자만 사용할 수 있습니다.' };
+  }
+
   return { valid: true };
 }
