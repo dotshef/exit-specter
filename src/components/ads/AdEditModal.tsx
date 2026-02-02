@@ -212,6 +212,7 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
             />
           </div>
