@@ -41,7 +41,7 @@ export default function AdCreatePage() {
   const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
   const [advertiserId, setAdvertiserId] = useState<number | null>(null);
   const [kind, setKind] = useState<'PAID' | 'TEST'>('PAID');
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity, setQuantity] = useState<number | ''>(1);
   const [currentRole, setCurrentRole] = useState<Role>('MASTER');
 
   // 후기 입력창 상태
@@ -85,7 +85,7 @@ export default function AdCreatePage() {
       setError('광고주를 선택해주세요.');
       return;
     }
-    if (quantity < 1) {
+    if (!quantity || quantity < 1) {
       setError('수량은 1개 이상이어야 합니다.');
       return;
     }
@@ -246,7 +246,15 @@ export default function AdCreatePage() {
                 type="number"
                 min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setQuantity(val === '' ? '' : Number(val));
+                }}
+                onBlur={() => {
+                  if (quantity === '' || quantity < 1) {
+                    setQuantity(1);
+                  }
+                }}
                 disabled={showAdRows}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] disabled:bg-gray-100"
               />
@@ -306,6 +314,7 @@ export default function AdCreatePage() {
                         type="date"
                         value={row.startDate}
                         onChange={(e) => updateAdRow(index, 'startDate', e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />
                     </td>
