@@ -91,7 +91,9 @@ export default function AdCreatePage() {
     }
 
     setError('');
-    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
     const defaultEndDate = new Date();
     defaultEndDate.setDate(defaultEndDate.getDate() + 30);
     const endDateStr = defaultEndDate.toISOString().split('T')[0];
@@ -100,7 +102,7 @@ export default function AdCreatePage() {
     const rows: AdRow[] = Array.from({ length: quantity }, () => ({
       keyword: '',
       productLink: '',
-      startDate: today,
+      startDate: tomorrowStr,
       endDate: endDateStr,
     }));
     setAdRows(rows);
@@ -314,7 +316,7 @@ export default function AdCreatePage() {
                         type="date"
                         value={row.startDate}
                         onChange={(e) => updateAdRow(index, 'startDate', e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
+                        min={(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })()}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />
                     </td>
@@ -323,6 +325,7 @@ export default function AdCreatePage() {
                         type="date"
                         value={row.endDate}
                         onChange={(e) => updateAdRow(index, 'endDate', e.target.value)}
+                        min={(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })()}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />
                     </td>
