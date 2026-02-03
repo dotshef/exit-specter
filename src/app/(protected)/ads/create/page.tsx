@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/hooks/useToast';
+import { isWeekendKST } from '@/lib/date';
 import { Role } from '@/types';
 
 interface Advertiser {
@@ -50,6 +51,7 @@ export default function AdCreatePage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const isWeekend = isWeekendKST();
 
   useEffect(() => {
     async function init() {
@@ -91,7 +93,9 @@ export default function AdCreatePage() {
     }
 
     setError('');
-    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
     const defaultEndDate = new Date();
     defaultEndDate.setDate(defaultEndDate.getDate() + 30);
     const endDateStr = defaultEndDate.toISOString().split('T')[0];
@@ -100,7 +104,7 @@ export default function AdCreatePage() {
     const rows: AdRow[] = Array.from({ length: quantity }, () => ({
       keyword: '',
       productLink: '',
-      startDate: today,
+      startDate: tomorrowStr,
       endDate: endDateStr,
     }));
     setAdRows(rows);
@@ -314,7 +318,7 @@ export default function AdCreatePage() {
                         type="date"
                         value={row.startDate}
                         onChange={(e) => updateAdRow(index, 'startDate', e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
+                        min={(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })()}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />
                     </td>
@@ -323,6 +327,7 @@ export default function AdCreatePage() {
                         type="date"
                         value={row.endDate}
                         onChange={(e) => updateAdRow(index, 'endDate', e.target.value)}
+                        min={(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })()}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
                       />
                     </td>
@@ -336,6 +341,11 @@ export default function AdCreatePage() {
           </div>
 
           {error && <p className="text-sm text-red-600 px-4 py-3">{error}</p>}
+          {isWeekend && (
+            <p className="text-sm text-orange-600 px-4 py-3">
+              주말(토요일, 일요일)에는 광고를 등록할 수 없습니다.
+            </p>
+          )}
 
           <div className="flex justify-end gap-2 p-4 border-t border-gray-200">
             <Button
@@ -347,7 +357,7 @@ export default function AdCreatePage() {
             >
               취소
             </Button>
-            <Button onClick={handleSubmit} disabled={loading}>
+            <Button onClick={handleSubmit} disabled={loading || isWeekend}>
               {loading ? '등록 중...' : '등록'}
             </Button>
           </div>

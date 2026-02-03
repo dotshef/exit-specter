@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
+import { isWeekendKST } from '@/lib/date';
 import { Role } from '@/types';
 
 function computeStats(ads: { kind: string; status: string }[]) {
@@ -114,6 +115,10 @@ export async function POST(request: NextRequest) {
 
   if (role === 'ADVERTISER') {
     return NextResponse.json({ error: '광고 등록 권한이 없습니다.' }, { status: 403 });
+  }
+
+  if (isWeekendKST()) {
+    return NextResponse.json({ error: '주말(토요일, 일요일)에는 광고를 등록할 수 없습니다.' }, { status: 400 });
   }
 
   const body = await request.json();

@@ -9,6 +9,7 @@ import AdStatusCards from '@/components/ads/AdStatusCards';
 import AdTable from '@/components/ads/AdTable';
 import AdEditModal from '@/components/ads/AdEditModal';
 import { useToast } from '@/hooks/useToast';
+import { isWeekendKST } from '@/lib/date';
 
 const emptyStats: AdStatsGroup = {
   all: { total: 0, active: 0, error: 0, waiting: 0, endingSoon: 0, ended: 0 },
@@ -102,6 +103,7 @@ export default function AdsPage() {
 
   const canCreate = currentRole === 'MASTER' || currentRole === 'AGENCY';
   const canDelete = currentRole === 'MASTER';
+  const isWeekend = isWeekendKST();
 
   return (
     <div>
@@ -123,8 +125,21 @@ export default function AdsPage() {
       {(canCreate || canDelete) && (
         <div className="flex justify-end gap-2 mb-3">
           {canDelete && <Button variant="outline" onClick={handleDelete}>삭제</Button>}
-          {canCreate && <Button onClick={() => router.push('/ads/create')}>등록</Button>}
+          {canCreate && (
+            <Button
+              onClick={() => router.push('/ads/create')}
+              disabled={isWeekend}
+              title={isWeekend ? '주말에는 광고를 등록할 수 없습니다.' : undefined}
+            >
+              등록
+            </Button>
+          )}
         </div>
+      )}
+      {canCreate && isWeekend && (
+        <p className="text-sm text-orange-600 text-right mb-3">
+          주말(토요일, 일요일)에는 광고를 등록할 수 없습니다.
+        </p>
       )}
 
       <AdTable
