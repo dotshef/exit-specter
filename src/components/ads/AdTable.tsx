@@ -77,7 +77,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                 )}
               </th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">No</th>
-              <th className="px-3 py-3 text-left font-medium text-gray-600">아이디</th>
+              <th className="px-3 py-3 text-left font-medium text-gray-600">광고주</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">상태</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">키워드</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">순위</th>
@@ -109,7 +109,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                     )}
                   </td>
                   <td className="px-3 py-3 text-gray-600">{ad.id}</td>
-                  <td className="px-3 py-3 text-gray-900">{ad.advertiserUsername}</td>
+                  <td className="px-3 py-3 text-gray-900">{ad.advertiserNickname || ad.advertiserUsername || '-'}</td>
                   <td className="px-3 py-3">
                     <span className={`font-medium ${STATUS_STYLES[ad.status] || ''}`}>
                       {STATUS_LABELS[ad.status] || ad.status}

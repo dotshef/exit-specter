@@ -25,8 +25,10 @@ export interface User {
 export interface Ad {
   id: number;
   organizationId: number;
+  organizationName?: string | null;
   advertiserId: number;
   advertiserUsername?: string;
+  advertiserNickname?: string | null;
   kind: AdKind;
   status: AdStatus;
   keyword: string | null;

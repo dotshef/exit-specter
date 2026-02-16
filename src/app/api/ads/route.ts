@@ -92,7 +92,8 @@ export async function GET(request: NextRequest) {
   const ads = await prisma.ad.findMany({
     where: filterWhere,
     include: {
-      advertiser: { select: { username: true } },
+      advertiser: { select: { username: true, nickname: true } },
+      organization: { select: { name: true } },
     },
     orderBy: { id: 'desc' },
     skip: (page - 1) * PAGE_SIZE,
@@ -102,8 +103,10 @@ export async function GET(request: NextRequest) {
   const formattedAds = ads.map((ad) => ({
     id: ad.id,
     organizationId: ad.organizationId,
+    organizationName: ad.organization?.name || null,
     advertiserId: ad.advertiserId,
     advertiserUsername: ad.advertiser.username,
+    advertiserNickname: ad.advertiser.nickname,
     kind: ad.kind,
     status: ad.status,
     keyword: ad.keyword,
