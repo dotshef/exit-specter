@@ -14,6 +14,11 @@ export async function PATCH(
 
   const role = session.role as Role;
 
+  // 광고주는 광고 수정 불가
+  if (role === 'ADVERTISER') {
+    return NextResponse.json({ error: '광고주는 광고를 수정할 수 없습니다.' }, { status: 403 });
+  }
+
   const { id } = await params;
   const targetId = parseInt(id, 10);
 
@@ -23,11 +28,8 @@ export async function PATCH(
     return NextResponse.json({ error: '광고를 찾을 수 없습니다.' }, { status: 404 });
   }
 
-  // 권한 체크: AGENCY는 자기 조직만, ADVERTISER는 자기 광고만
+  // 권한 체크: AGENCY는 자기 조직만
   if (role === 'AGENCY' && ad.organizationId !== session.organizationId) {
-    return NextResponse.json({ error: '수정 권한이 없습니다.' }, { status: 403 });
-  }
-  if (role === 'ADVERTISER' && ad.advertiserId !== session.id) {
     return NextResponse.json({ error: '수정 권한이 없습니다.' }, { status: 403 });
   }
 

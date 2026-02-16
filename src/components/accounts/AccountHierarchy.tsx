@@ -26,17 +26,19 @@ interface UserInfo {
   role: string;
 }
 
-interface Organization {
+interface Agency {
   id: number;
   name: string;
-  agencies: UserInfo[];
+  masterId: number | null;
+  masterNickname: string | null;
+  userCount: number;
+  agencyUsers: UserInfo[];
   advertisers: UserInfo[];
 }
 
 interface HierarchyData {
-  masters?: Master[];
-  organizations?: Organization[];
-  organization?: Organization & { master?: { id: number; nickname: string | null } };
+  masters: Master[];
+  agencies: Agency[];
 }
 
 interface AccountHierarchyProps {
@@ -60,7 +62,7 @@ function RoleBadge({ role }: { role: string }) {
 }
 
 export default function AccountHierarchy({ currentRole }: AccountHierarchyProps) {
-  const [data, setData] = useState<HierarchyData>({});
+  const [data, setData] = useState<HierarchyData>({ masters: [], agencies: [] });
   const [selectedMasterId, setSelectedMasterId] = useState<number | null>(null);
   const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,62 +71,104 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editAccountId, setEditAccountId] = useState<number | null>(null);
 
-  async function fetchHierarchy(masterId?: number, orgId?: number) {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (masterId) params.set('masterId', masterId.toString());
-    if (orgId) params.set('organizationId', orgId.toString());
-
-    const res = await fetch(`/api/accounts/hierarchy?${params.toString()}`);
+  // MASTER: 초기 로드 - 총판 목록
+  async function fetchMasters() {
+    const res = await fetch('/api/masters');
     if (res.ok) {
-      const newData = await res.json();
-      setData(newData);
-
-      // MASTER가 처음 로드 시 첫 번째 총판 자동 선택
-      if (currentRole === 'MASTER' && !masterId && newData.masters?.length > 0) {
-        const firstMaster = newData.masters[0];
-        setSelectedMasterId(firstMaster.id);
-        fetchHierarchy(firstMaster.id);
-        return;
-      }
+      const json = await res.json();
+      return json.masters as Master[];
     }
-    setLoading(false);
+    return [];
+  }
+
+  // MASTER: 총판 선택 시 조직 목록
+  async function fetchAgencies(masterId: number) {
+    const res = await fetch(`/api/agencies?masterId=${masterId}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.agencies as Agency[];
+    }
+    return [];
+  }
+
+  // AGENCY/ADVERTISER: 자기 org 데이터 로드
+  async function fetchOwnData() {
+    const [mastersRes, agenciesRes] = await Promise.all([
+      fetch('/api/masters'),
+      fetch('/api/agencies'),
+    ]);
+
+    const masters = mastersRes.ok ? (await mastersRes.json()).masters : [];
+    const agencies = agenciesRes.ok ? (await agenciesRes.json()).agencies : [];
+
+    return { masters, agencies };
   }
 
   // 초기 데이터 로드
   useEffect(() => {
-    fetchHierarchy();
+    async function init() {
+      setLoading(true);
+      if (currentRole === 'MASTER') {
+        const masters = await fetchMasters();
+        if (masters.length > 0) {
+          const firstMaster = masters[0];
+          setSelectedMasterId(firstMaster.id);
+          const agencies = await fetchAgencies(firstMaster.id);
+          setData({ masters, agencies });
+        } else {
+          setData({ masters, agencies: [] });
+        }
+      } else {
+        const { masters, agencies } = await fetchOwnData();
+        setData({ masters, agencies });
+      }
+      setLoading(false);
+    }
+    init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleMasterSelect(masterId: number) {
+  async function handleMasterSelect(masterId: number) {
     setSelectedMasterId(masterId);
     setSelectedOrgId(null);
-    fetchHierarchy(masterId);
+    setLoading(true);
+    const agencies = await fetchAgencies(masterId);
+    setData((prev) => ({ ...prev, agencies }));
+    setLoading(false);
   }
 
   function handleOrgSelect(orgId: number) {
     setSelectedOrgId(orgId);
   }
 
-  function handleCreateSuccess() {
+  async function handleCreateSuccess() {
+    setLoading(true);
     if (currentRole === 'MASTER') {
-      fetchHierarchy(selectedMasterId || undefined);
+      const masters = await fetchMasters();
+      const agencies = selectedMasterId ? await fetchAgencies(selectedMasterId) : [];
+      setData({ masters, agencies });
     } else {
-      fetchHierarchy();
+      const { masters, agencies } = await fetchOwnData();
+      setData({ masters, agencies });
     }
+    setLoading(false);
   }
 
-  function handleEditSuccess() {
+  async function handleEditSuccess() {
+    setLoading(true);
     if (currentRole === 'MASTER') {
-      fetchHierarchy(selectedMasterId || undefined);
+      const masters = await fetchMasters();
+      const agencies = selectedMasterId ? await fetchAgencies(selectedMasterId) : [];
+      setData({ masters, agencies });
     } else {
-      fetchHierarchy();
+      const { masters, agencies } = await fetchOwnData();
+      setData({ masters, agencies });
     }
+    setLoading(false);
   }
 
   // 선택된 조직 정보
-  const selectedOrg = data.organizations?.find((o) => o.id === selectedOrgId) || data.organization;
+  const selectedOrg = data.agencies.find((o) => o.id === selectedOrgId);
 
   // 등록 버튼 표시 여부 (광고주는 숨김)
   const canCreate = currentRole !== 'ADVERTISER';
@@ -198,6 +242,8 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
   // AGENCY/ADVERTISER는 바로 organization 데이터 표시
   if (currentRole !== 'MASTER') {
     const showActions = currentRole === 'AGENCY';
+    const org = data.agencies[0];
+    const master = data.masters[0];
 
     return (
       <>
@@ -215,13 +261,13 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
             <HierarchyColumn
               width="w-48"
               loading={loading}
-              isEmpty={!data.organization?.master}
+              isEmpty={!master}
               emptyMessage="총판 정보 없음"
             >
-              {data.organization?.master && (
+              {master && (
                 <div className="px-3 py-3 min-h-[52px] text-sm text-[var(--primary)] font-medium border-b-2 border-[var(--primary)]">
                   <ItemContent
-                    title={data.organization.master.nickname || '총판'}
+                    title={master.nickname || '총판'}
                     isSelected
                     hideSubtitle
                   />
@@ -233,16 +279,16 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
             <HierarchyColumn
               width="w-56"
               loading={loading}
-              isEmpty={!data.organization}
+              isEmpty={!org}
               emptyMessage="소속 조직 없음"
             >
-              {data.organization && (
+              {org && (
                 <div className="px-3 py-3 min-h-[52px] text-sm text-[var(--primary)] font-medium border-b-2 border-[var(--primary)]">
                   <ItemContent
-                    title={data.organization.name}
+                    title={org.name}
                     subtitle={
                       currentRole === 'AGENCY'
-                        ? `대행사 ${data.organization.agencies.length} · 광고주 ${data.organization.advertisers.length}`
+                        ? `대행사 ${org.agencyUsers.length} · 광고주 ${org.advertisers.length}`
                         : undefined
                     }
                     isSelected
@@ -258,12 +304,12 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
                 <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                   로딩 중...
                 </div>
-              ) : data.organization ? (
+              ) : org ? (
                 <table className="w-full text-sm">
                   <TableHeader showActions={showActions} />
                   <tbody>
                     <AccountTable
-                      accounts={[...data.organization.agencies, ...data.organization.advertisers]}
+                      accounts={[...org.agencyUsers, ...org.advertisers]}
                       showActions={showActions}
                     />
                   </tbody>
@@ -308,9 +354,9 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
           {/* 총판 목록 */}
           <HierarchyColumn
             width="w-48"
-            loading={loading && !data.masters}
+            loading={loading && data.masters.length === 0}
           >
-            {data.masters?.map((master) => (
+            {data.masters.map((master) => (
               <SelectableItem
                 key={master.id}
                 isSelected={selectedMasterId === master.id}
@@ -337,10 +383,10 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
           <HierarchyColumn
             width="w-56"
             loading={loading}
-            isEmpty={!selectedMasterId || data.organizations?.length === 0}
+            isEmpty={!selectedMasterId || data.agencies.length === 0}
             emptyMessage={!selectedMasterId ? '총판을 선택하세요.' : '등록된 대행사 조직이 없습니다.'}
           >
-            {data.organizations?.map((org) => (
+            {data.agencies.map((org) => (
               <SelectableItem
                 key={org.id}
                 isSelected={selectedOrgId === org.id}
@@ -348,7 +394,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
               >
                 <ItemContent
                   title={org.name}
-                  subtitle={`대행사 ${org.agencies.length} · 광고주 ${org.advertisers.length}`}
+                  subtitle={`대행사 ${org.agencyUsers.length} · 광고주 ${org.advertisers.length}`}
                   isSelected={selectedOrgId === org.id}
                 />
               </SelectableItem>
@@ -370,7 +416,7 @@ export default function AccountHierarchy({ currentRole }: AccountHierarchyProps)
                 <TableHeader showActions />
                 <tbody>
                   <AccountTable
-                    accounts={[...selectedOrg.agencies, ...selectedOrg.advertisers]}
+                    accounts={[...selectedOrg.agencyUsers, ...selectedOrg.advertisers]}
                     showActions
                   />
                 </tbody>
