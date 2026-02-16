@@ -36,6 +36,9 @@ export async function GET(request: NextRequest) {
   const statusFilter = searchParams.get('status');
   const kindFilter = searchParams.get('kind');
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+  const masterIdParam = searchParams.get('masterId');
+  const organizationIdParam = searchParams.get('organizationId');
+  const advertiserIdParam = searchParams.get('advertiserId');
 
   // Base where clause based on role
   let baseWhere: Record<string, unknown> = {};
@@ -45,8 +48,25 @@ export async function GET(request: NextRequest) {
   } else if (role === 'AGENCY') {
     // AGENCY는 자기 조직의 모든 광고
     baseWhere = { organizationId: session.organizationId };
+    // AGENCY는 advertiserId 필터만 추가 적용 가능
+    if (advertiserIdParam) {
+      baseWhere.advertiserId = parseInt(advertiserIdParam, 10);
+    }
+  } else if (role === 'MASTER') {
+    // MASTER는 모든 필터 적용 가능
+    if (advertiserIdParam) {
+      baseWhere.advertiserId = parseInt(advertiserIdParam, 10);
+    } else if (organizationIdParam) {
+      baseWhere.organizationId = parseInt(organizationIdParam, 10);
+    } else if (masterIdParam) {
+      // masterId로 필터: 해당 총판이 관리하는 Organization들의 광고
+      const orgIds = await prisma.organization.findMany({
+        where: { masterId: parseInt(masterIdParam, 10) },
+        select: { id: true },
+      });
+      baseWhere.organizationId = { in: orgIds.map((o) => o.id) };
+    }
   }
-  // MASTER는 모든 광고
 
   // Fetch all ads for stats (unfiltered by status/kind)
   const allAds = await prisma.ad.findMany({

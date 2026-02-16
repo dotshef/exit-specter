@@ -6,6 +6,7 @@ import { Ad, Role, AdStatsGroup } from '@/types';
 import Button from '@/components/ui/Button';
 import Pagination from '@/components/ui/Pagination';
 import AdStatusCards from '@/components/ads/AdStatusCards';
+import AdFilter from '@/components/ads/AdFilter';
 import AdTable from '@/components/ads/AdTable';
 import AdEditModal from '@/components/ads/AdEditModal';
 import { useToast } from '@/hooks/useToast';
@@ -28,12 +29,21 @@ export default function AdsPage() {
   const [editAd, setEditAd] = useState<Ad | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [hierarchyFilter, setHierarchyFilter] = useState<{ masterId: number | null; organizationId: number | null; advertiserId: number | null }>({ masterId: null, organizationId: null, advertiserId: null });
 
-  const fetchAds = useCallback(async (filter?: { kind: string | null; status: string | null } | null, page = 1) => {
+  const fetchAds = useCallback(async (
+    filter?: { kind: string | null; status: string | null } | null,
+    page = 1,
+    hFilter?: { masterId: number | null; organizationId: number | null; advertiserId: number | null },
+  ) => {
     const params = new URLSearchParams();
     if (filter?.status) params.set('status', filter.status);
     if (filter?.kind) params.set('kind', filter.kind);
     params.set('page', page.toString());
+    const h = hFilter ?? hierarchyFilter;
+    if (h.advertiserId) params.set('advertiserId', h.advertiserId.toString());
+    else if (h.organizationId) params.set('organizationId', h.organizationId.toString());
+    else if (h.masterId) params.set('masterId', h.masterId.toString());
     const query = `?${params.toString()}`;
 
     const res = await fetch(`/api/ads${query}`);
@@ -44,7 +54,7 @@ export default function AdsPage() {
       setCurrentPage(data.pagination.page);
       setTotalPages(data.pagination.totalPages);
     }
-  }, []);
+  }, [hierarchyFilter]);
 
   useEffect(() => {
     async function init() {
@@ -63,6 +73,13 @@ export default function AdsPage() {
     setSelectedIds([]);
     setCurrentPage(1);
     fetchAds(filter, 1);
+  }
+
+  function handleHierarchyFilterChange(hFilter: { masterId: number | null; organizationId: number | null; advertiserId: number | null }) {
+    setHierarchyFilter(hFilter);
+    setSelectedIds([]);
+    setCurrentPage(1);
+    fetchAds(selectedFilter, 1, hFilter);
   }
 
   function handlePageChange(page: number) {
@@ -113,6 +130,11 @@ export default function AdsPage() {
           진행 중인 광고의 연장·수정·삭제 등의 관리 작업을 할 수 있습니다.
         </p>
       </div>
+
+      <AdFilter
+        currentRole={currentRole}
+        onFilterChange={handleHierarchyFilterChange}
+      />
 
       <div className="mb-6">
         <AdStatusCards
