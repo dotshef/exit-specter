@@ -70,12 +70,12 @@ export default function AdCreatePage() {
       }
 
       // 광고주 목록 조회
-      const res = await fetch('/api/accounts?role=ADVERTISER');
+      const res = await fetch('/api/advertisers');
       const data = await res.json();
-      if (data.accounts) {
-        setAdvertisers(data.accounts);
-        if (data.accounts.length > 0) {
-          setAdvertiserId(data.accounts[0].id);
+      if (data.advertisers) {
+        setAdvertisers(data.advertisers);
+        if (data.advertisers.length > 0) {
+          setAdvertiserId(data.advertisers[0].id);
         }
       }
     }

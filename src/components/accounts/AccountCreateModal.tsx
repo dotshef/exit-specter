@@ -50,9 +50,9 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
       setError('');
 
       if (currentRole === 'MASTER') {
-        fetch('/api/organizations')
+        fetch('/api/agencies')
           .then((res) => res.json())
-          .then((data) => setOrganizations(data.organizations || []));
+          .then((data) => setOrganizations(data.agencies || []));
       }
     }
   }, [isOpen, currentRole]);

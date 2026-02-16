@@ -45,16 +45,11 @@
 **목적**: 프론트에서 드롭다운 옵션을 채울 데이터를 가져올 수 있도록 API를 준비한다.
 
 **상세**:
-1. **총판 목록 API** - `GET /api/accounts?role=MASTER` 또는 별도 엔드포인트
-   - MASTER 역할인 사용자 목록을 반환 (id, nickname)
-   - 이미 accounts API에서 `role` 쿼리 파라미터로 필터 가능한지 확인 → 가능하면 그대로 사용
+1. **총판 목록 API** - `GET /api/accounts?role=MASTER` (변경 없음, 기존 API 그대로 사용)
 
-2. **대행사(Organization) 목록 API** - `GET /api/organizations`
-   - 현재: MASTER는 `masterId` 파라미터로 필터 가능
-   - 확인 필요: `masterId` 파라미터가 정상 동작하는지 검증
-   - 프론트에서 총판 선택 시 `GET /api/organizations?masterId={id}` 호출
+2. **대행사(Organization) 목록 API** - `GET /api/organizations?masterId={id}` (변경 없음, 기존 API 그대로 사용)
 
-3. **광고주 목록 API** - `GET /api/accounts?role=ADVERTISER`
+3. **광고주 목록 API** - `GET /api/accounts?role=ADVERTISER` (수정 필요)
    - 현재: AGENCY는 자동으로 자기 Organization 소속만 반환
    - 추가 필요: MASTER가 `organizationId` 파라미터로 특정 대행사 소속 광고주를 필터할 수 있어야 함
    - `GET /api/accounts?role=ADVERTISER&organizationId={id}` 형태
@@ -68,8 +63,9 @@
   - `masterId` - 총판 ID (해당 총판이 관리하는 Organization들의 광고만)
   - `organizationId` - 대행사(Organization) ID
   - `advertiserId` - 광고주 ID
-- MASTER 역할일 때만 이 필터들이 적용됨
+- MASTER 역할일 때 `masterId`, `organizationId`, `advertiserId` 필터 모두 적용 가능
 - AGENCY 역할일 때는 `advertiserId` 필터만 추가 적용 가능 (organizationId는 이미 자동 제한)
+- ADVERTISER 역할일 때는 필터 파라미터 무시, 기존과 동일하게 본인 광고만 반환
 - Prisma where 조건에 해당 필터를 반영
 - stats(전체/정상/오류 등)도 동일한 필터 조건으로 집계되어야 함
 

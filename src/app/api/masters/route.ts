@@ -8,32 +8,67 @@ export async function GET() {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
   }
 
-  // MASTER만 다른 총판 목록 조회 가능
-  if (session.role !== 'MASTER') {
-    return NextResponse.json({ error: '접근 권한이 없습니다.' }, { status: 403 });
+  // MASTER: 전체 총판 목록
+  if (session.role === 'MASTER') {
+    const masters = await prisma.user.findMany({
+      where: { role: 'MASTER' },
+      select: {
+        id: true,
+        username: true,
+        nickname: true,
+        createdAt: true,
+        _count: {
+          select: { managedOrganizations: true },
+        },
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    return NextResponse.json({
+      masters: masters.map((m) => ({
+        id: m.id,
+        username: m.username,
+        nickname: m.nickname,
+        createdAt: m.createdAt.toISOString(),
+        organizationCount: m._count.managedOrganizations,
+      })),
+    });
   }
 
-  const masters = await prisma.user.findMany({
-    where: { role: 'MASTER' },
-    select: {
-      id: true,
-      username: true,
-      nickname: true,
-      createdAt: true,
-      _count: {
-        select: { managedOrganizations: true },
+  // AGENCY/ADVERTISER: 자기 org의 총판만 반환
+  if (!session.organizationId) {
+    return NextResponse.json({ masters: [] });
+  }
+
+  const org = await prisma.organization.findUnique({
+    where: { id: session.organizationId },
+    include: {
+      master: {
+        select: {
+          id: true,
+          username: true,
+          nickname: true,
+          createdAt: true,
+          _count: {
+            select: { managedOrganizations: true },
+          },
+        },
       },
     },
-    orderBy: { id: 'asc' },
   });
 
+  if (!org?.master) {
+    return NextResponse.json({ masters: [] });
+  }
+
+  const m = org.master;
   return NextResponse.json({
-    masters: masters.map((m) => ({
+    masters: [{
       id: m.id,
       username: m.username,
       nickname: m.nickname,
       createdAt: m.createdAt.toISOString(),
       organizationCount: m._count.managedOrganizations,
-    })),
+    }],
   });
 }
