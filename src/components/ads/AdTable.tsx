@@ -9,6 +9,7 @@ interface AdTableProps {
   onSelectionChange: (ids: number[]) => void;
   onEdit: (ad: Ad) => void;
   showCheckbox: boolean;
+  showEdit: boolean;
 }
 
 function calculateRemainingDays(endDate: string): number {
@@ -37,7 +38,7 @@ const STATUS_STYLES: Record<string, string> = {
   ENDED: 'text-gray-500',
 };
 
-export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, showCheckbox }: AdTableProps) {
+export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, showCheckbox, showEdit }: AdTableProps) {
   const allSelected = ads.length > 0 && selectedIds.length === ads.length;
 
   function handleSelectAll() {
@@ -84,7 +85,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
               <th className="px-3 py-3 text-left font-medium text-gray-600">남은작업일수</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">시작일</th>
               <th className="px-3 py-3 text-left font-medium text-gray-600">종료일</th>
-              <th className="w-14 px-3 py-3 text-center font-medium text-gray-600">관리</th>
+              {showEdit && <th className="w-14 px-3 py-3 text-center font-medium text-gray-600">관리</th>}
             </tr>
           </thead>
           <tbody>
@@ -132,14 +133,16 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                   <td className="px-3 py-3 text-gray-600">{calculateRemainingDays(ad.endDate)}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.startDate}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.endDate}</td>
-                  <td className="px-3 py-3 text-center">
-                    <button
-                      onClick={() => onEdit(ad)}
-                      className="text-gray-400 hover:text-gray-600 cursor-pointer"
-                    >
-                      <GearIcon className="w-5 h-5" />
-                    </button>
-                  </td>
+                  {showEdit && (
+                    <td className="px-3 py-3 text-center">
+                      <button
+                        onClick={() => onEdit(ad)}
+                        className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        <GearIcon className="w-5 h-5" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
