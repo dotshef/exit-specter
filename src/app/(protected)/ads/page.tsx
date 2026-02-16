@@ -148,7 +148,7 @@ export default function AdsPage() {
         onSelectionChange={setSelectedIds}
         onEdit={(ad) => setEditAd(ad)}
         showCheckbox={canDelete}
-        showEdit={role !== 'ADVERTISER'}
+        showEdit={currentRole !== 'ADVERTISER'}
       />
 
       <Pagination
