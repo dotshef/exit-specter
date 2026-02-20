@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         .filter((u) => u.role === 'AGENCY')
         .map((u) => ({ id: u.id, username: u.username, nickname: u.nickname, memo: u.memo, role: u.role })),
       advertisers: org.users
-        .filter((u) => u.role === 'ADVERTISER')
+        .filter((u) => u.role === 'ADVERTISER' && (session.role !== 'ADVERTISER' || u.id === session.id))
         .map((u) => ({ id: u.id, username: u.username, nickname: u.nickname, memo: u.memo, role: u.role })),
     })),
   });
