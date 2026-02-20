@@ -19,13 +19,13 @@ interface AdRow {
   endDate: string;
 }
 
-function calculateRemainingDays(endDate: string): number {
-  if (!endDate) return 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+function calculateRemainingDays(startDate: string, endDate: string): number {
+  if (!startDate || !endDate) return 0;
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
   end.setHours(0, 0, 0, 0);
-  const diffTime = end.getTime() - today.getTime();
+  const diffTime = end.getTime() - start.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(0, diffDays);
 }
@@ -332,7 +332,7 @@ export default function AdCreatePage() {
                       />
                     </td>
                     <td className="px-3 py-2 text-center text-gray-600">
-                      {calculateRemainingDays(row.endDate)}
+                      {calculateRemainingDays(row.startDate, row.endDate)}
                     </td>
                   </tr>
                 ))}
