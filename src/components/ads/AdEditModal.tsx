@@ -44,12 +44,12 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
   }, [isOpen, ad]);
 
   function computeWorkingDays(): number {
-    if (!endDate) return 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
     const end = new Date(endDate);
     end.setHours(0, 0, 0, 0);
-    const diffTime = end.getTime() - today.getTime();
+    const diffTime = end.getTime() - start.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);
   }

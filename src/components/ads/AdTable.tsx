@@ -12,12 +12,12 @@ interface AdTableProps {
   showEdit: boolean;
 }
 
-function calculateRemainingDays(endDate: string): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+function calculateRemainingDays(startDate: string, endDate: string): number {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
   end.setHours(0, 0, 0, 0);
-  const diffTime = end.getTime() - today.getTime();
+  const diffTime = end.getTime() - start.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(0, diffDays);
 }
@@ -130,7 +130,7 @@ export default function AdTable({ ads, selectedIds, onSelectionChange, onEdit, s
                       </a>
                     ) : '-'}
                   </td>
-                  <td className="px-3 py-3 text-gray-600">{calculateRemainingDays(ad.endDate)}</td>
+                  <td className="px-3 py-3 text-gray-600">{calculateRemainingDays(ad.startDate, ad.endDate)}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.startDate}</td>
                   <td className="px-3 py-3 text-gray-600">{ad.endDate}</td>
                   {showEdit && (
