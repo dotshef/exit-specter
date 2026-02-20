@@ -51,10 +51,11 @@ export default function AdEditModal({ isOpen, onClose, onSuccess, ad, currentRol
     start.setHours(0, 0, 0, 0);
     const end = new Date(endDate);
     end.setHours(0, 0, 0, 0);
-    const base = start > today ? start : today;
+    const beforeStart = start > today;
+    const base = beforeStart ? start : today;
     const diffTime = end.getTime() - base.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
+    return Math.max(0, beforeStart ? diffDays + 1 : diffDays);
   }
 
   function isValidUrl(url: string): boolean {
