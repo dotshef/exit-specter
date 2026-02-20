@@ -21,11 +21,14 @@ interface AdRow {
 
 function calculateRemainingDays(startDate: string, endDate: string): number {
   if (!startDate || !endDate) return 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const start = new Date(startDate);
   start.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
   end.setHours(0, 0, 0, 0);
-  const diffTime = end.getTime() - start.getTime();
+  const base = start > today ? start : today;
+  const diffTime = end.getTime() - base.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(0, diffDays);
 }
