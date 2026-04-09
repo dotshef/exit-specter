@@ -281,9 +281,6 @@ export default function AccountEditModal({
                     autoComplete="off"
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
                   />
-                  {passwordConfirm && password !== passwordConfirm && (
-                    <p className="text-xs text-red-600">비밀번호가 일치하지 않습니다.</p>
-                  )}
                 </div>
               )}
             </div>
