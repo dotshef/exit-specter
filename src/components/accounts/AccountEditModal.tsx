@@ -40,6 +40,7 @@ export default function AccountEditModal({
   const [nickname, setNickname] = useState('');
   const [memo, setMemo] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [changePassword, setChangePassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -56,6 +57,7 @@ export default function AccountEditModal({
       setError('');
       setChangePassword(false);
       setPassword('');
+      setPasswordConfirm('');
       setShowDeleteConfirm(false);
       setDeleteError('');
 
@@ -74,6 +76,7 @@ export default function AccountEditModal({
       setNickname('');
       setMemo('');
       setPassword('');
+      setPasswordConfirm('');
       setChangePassword(false);
     }
   }, [isOpen, accountId]);
@@ -88,6 +91,10 @@ export default function AccountEditModal({
       const passwordValidation = validatePassword(password);
       if (!passwordValidation.valid) {
         setError(passwordValidation.error || '');
+        return;
+      }
+      if (password !== passwordConfirm) {
+        setError('비밀번호가 일치하지 않습니다.');
         return;
       }
     }
@@ -257,13 +264,24 @@ export default function AccountEditModal({
                 비밀번호 변경
               </label>
               {changePassword && (
-                <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="새 비밀번호를 입력해주세요."
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
-                />
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="새 비밀번호를 입력해주세요."
+                    autoComplete="off"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
+                  />
+                  <input
+                    type="text"
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    placeholder="새 비밀번호를 한 번 더 입력해주세요."
+                    autoComplete="off"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
+                  />
+                </div>
               )}
             </div>
 

@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [memo, setMemo] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -53,6 +54,10 @@ export default function ProfilePage() {
         addToast(passwordValidation.error || '비밀번호 오류', 'error');
         return;
       }
+      if (password !== passwordConfirm) {
+        addToast('비밀번호가 일치하지 않습니다.', 'error');
+        return;
+      }
     }
 
     setLoading(true);
@@ -71,6 +76,7 @@ export default function ProfilePage() {
       if (res.ok) {
         addToast('프로필이 수정되었습니다.', 'success');
         setPassword('');
+        setPasswordConfirm('');
       } else {
         const data = await res.json();
         addToast(data.error || '수정에 실패했습니다.', 'error');
@@ -144,6 +150,21 @@ export default function ProfilePage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="변경 시에만 입력 (8자 이상)"
+                autoComplete="new-password"
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                비밀번호 확인
+              </label>
+              <input
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder="비밀번호를 한 번 더 입력해주세요."
+                autoComplete="new-password"
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
               />
             </div>
