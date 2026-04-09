@@ -25,6 +25,7 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
   const [username, setUsername] = useState('');
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [role, setRole] = useState<string>('');
   const [organizationId, setOrganizationId] = useState<number | null>(null);
   const [organizationName, setOrganizationName] = useState('');
@@ -42,6 +43,7 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
       setUsername('');
       setNickname('');
       setPassword('');
+      setPasswordConfirm('');
       setRole(roles[0] || '');
       setOrganizationId(null);
       setOrganizationName('');
@@ -71,6 +73,11 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
       setError(passwordValidation.error || '');
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setError('비밀번호가 일치하지 않습니다.');
       return;
     }
 
@@ -170,6 +177,23 @@ export default function AccountCreateModal({ isOpen, onClose, onSuccess, current
             autoComplete="off"
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            비밀번호 확인<span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            placeholder="비밀번호를 한 번 더 입력해주세요."
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#4CAF50] text-security-disc"
+          />
+          {passwordConfirm && password !== passwordConfirm && (
+            <p className="mt-1 text-xs text-red-600">비밀번호가 일치하지 않습니다.</p>
+          )}
         </div>
 
         <div>
