@@ -220,6 +220,83 @@ export async function POST(request: NextRequest) {
     count: createdAds.length,
   }, { status: 201 });
 }
+export async function PATCH(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
+  }
+
+  const role = session.role as Role;
+
+  if (role === 'ADVERTISER') {
+    return NextResponse.json({ error: '광고 수정 권한이 없습니다.' }, { status: 403 });
+  }
+
+  const body = await request.json();
+  const { ids, data } = body as {
+    ids: number[];
+    data: {
+      status?: string;
+      keyword?: string | null;
+      rank?: number | null;
+      productLink?: string | null;
+      startDate?: string;
+      endDate?: string;
+    };
+  };
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return NextResponse.json({ error: '수정할 광고를 선택해주세요.' }, { status: 400 });
+  }
+
+  if (!data || Object.keys(data).length === 0) {
+    return NextResponse.json({ error: '수정할 항목을 선택해주세요.' }, { status: 400 });
+  }
+
+  // Validation
+  if (data.keyword !== undefined && data.keyword !== null && data.keyword.length > 10) {
+    return NextResponse.json({ error: '키워드는 10자 이내로 입력해주세요.' }, { status: 400 });
+  }
+  if (data.productLink !== undefined && data.productLink !== null && !/^https?:\/\/.+/.test(data.productLink)) {
+    return NextResponse.json({ error: '상품 링크는 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
+  }
+
+  // 권한 체크: AGENCY는 자기 조직의 광고만 수정 가능
+  const where: Record<string, unknown> = { id: { in: ids } };
+  if (role === 'AGENCY') {
+    where.organizationId = session.organizationId;
+  }
+
+  const targets = await prisma.ad.findMany({ where, select: { id: true } });
+  if (targets.length !== ids.length) {
+    return NextResponse.json({ error: '수정 권한이 없는 광고가 포함되어 있습니다.' }, { status: 403 });
+  }
+
+  const updateData: Record<string, unknown> = {};
+  const isMaster = role === 'MASTER';
+
+  if (data.keyword !== undefined) updateData.keyword = data.keyword;
+  if (data.productLink !== undefined) updateData.productLink = data.productLink;
+  if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate);
+  if (data.endDate !== undefined) updateData.endDate = new Date(data.endDate);
+
+  if (isMaster) {
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.rank !== undefined) updateData.rank = data.rank;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return NextResponse.json({ error: '수정할 항목이 없습니다.' }, { status: 400 });
+  }
+
+  const result = await prisma.ad.updateMany({
+    where: { id: { in: ids } },
+    data: updateData,
+  });
+
+  return NextResponse.json({ updatedCount: result.count });
+}
+
 export async function DELETE(request: NextRequest) {
   const session = await getSession();
   if (!session) {
