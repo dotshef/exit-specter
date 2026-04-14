@@ -9,6 +9,7 @@ import AdStatusCards from '@/components/ads/AdStatusCards';
 import AdFilter from '@/components/ads/AdFilter';
 import AdTable from '@/components/ads/AdTable';
 import AdEditModal from '@/components/ads/AdEditModal';
+import AdBulkEditModal from '@/components/ads/AdBulkEditModal';
 import { useToast } from '@/hooks/useToast';
 import { isWeekendKST } from '@/lib/date';
 
@@ -27,6 +28,7 @@ export default function AdsPage() {
   const [selectedFilter, setSelectedFilter] = useState<{ kind: string | null; status: string | null } | null>(null);
   const [currentRole, setCurrentRole] = useState<Role>('ADVERTISER');
   const [editAd, setEditAd] = useState<Ad | null>(null);
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [hierarchyFilter, setHierarchyFilter] = useState<{ masterId: number | null; organizationId: number | null; advertiserId: number | null }>({ masterId: null, organizationId: null, advertiserId: null });
@@ -118,8 +120,23 @@ export default function AdsPage() {
     fetchAds(selectedFilter, currentPage);
   }
 
+  function handleBulkEditSuccess(updatedCount: number) {
+    addToast(`${updatedCount}개 광고가 수정되었습니다.`, 'success');
+    setSelectedIds([]);
+    fetchAds(selectedFilter, currentPage);
+  }
+
+  function handleBulkEditClick() {
+    if (selectedIds.length === 0) {
+      addToast('수정할 광고를 선택해주세요.', 'error');
+      return;
+    }
+    setBulkEditOpen(true);
+  }
+
   const canCreate = currentRole === 'MASTER' || currentRole === 'AGENCY';
   const canDelete = currentRole === 'MASTER';
+  const canBulkEdit = currentRole === 'MASTER' || currentRole === 'AGENCY';
   const isWeekend = isWeekendKST();
 
   return (
@@ -144,8 +161,17 @@ export default function AdsPage() {
         />
       </div>
 
-      {(canCreate || canDelete) && (
+      {(canCreate || canDelete || canBulkEdit) && (
         <div className="flex justify-end gap-2 mb-3">
+          {canBulkEdit && (
+            <Button
+              variant="outline"
+              onClick={handleBulkEditClick}
+              disabled={selectedIds.length === 0}
+            >
+              수정
+            </Button>
+          )}
           {canDelete && <Button variant="outline" onClick={handleDelete}>삭제</Button>}
           {canCreate && (
             <Button
@@ -169,7 +195,7 @@ export default function AdsPage() {
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
         onEdit={(ad) => setEditAd(ad)}
-        showCheckbox={canDelete}
+        showCheckbox={canDelete || canBulkEdit}
         showEdit={currentRole !== 'ADVERTISER'}
       />
 
@@ -184,6 +210,14 @@ export default function AdsPage() {
         onClose={() => setEditAd(null)}
         onSuccess={handleEditSuccess}
         ad={editAd}
+        currentRole={currentRole}
+      />
+
+      <AdBulkEditModal
+        isOpen={bulkEditOpen}
+        onClose={() => setBulkEditOpen(false)}
+        onSuccess={handleBulkEditSuccess}
+        selectedIds={selectedIds}
         currentRole={currentRole}
       />
     </div>
